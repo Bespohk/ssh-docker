@@ -27,6 +27,7 @@ def format_containers(containers, full=False, numbered=False):
     for i, container in enumerate(containers):
         details: str = None
         one_based_index = i + 1
+        one_based_index = click.style(f'{one_based_index}', bold=True)
         number = f'[{one_based_index}] ' if numbered else ''
         name = click.style(container.names, fg='yellow')
         if not full:

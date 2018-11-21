@@ -20,6 +20,8 @@ def list(client: client.Client, full=False, use_cache=False):
     [full] will return more information regarding the containers.
     """
     containers, errors = utils.ps(client)
+    if 'docker: command not found' in errors:
+        errors = 'Docker is not running on this host.'
     return utils.format_containers(containers, full=full), errors
 
 
@@ -34,8 +36,10 @@ def docker(client: client.Client, command='help'):
 
 
 def select_container(client: client.Client, shell: str):
-    input_prompt = [click.style('Which container would you like to connect to?', bold=True)]
+    input_prompt = ['Which container would you like to connect to?']
     containers, _ = utils.ps(client, use_cache=True)
+    if not containers:
+        return None, None
     input_prompt.append(utils.format_containers(containers, numbered=True))
     input_prompt.append(f'Default [1 {shell}]: ')
     container = input(utils.NL.join(input_prompt))
@@ -48,7 +52,7 @@ def select_container(client: client.Client, shell: str):
             shell = container_shell[1]
         return containers[int(container) - 1].names, shell
     except IndexError:
-        click.secho(f'\nContainer {container} does not exist.\n', fg='red')
+        click.secho(f'Container {container} does not exist.', fg='red')
         return select_container(client, shell)
     except ValueError:
         return container, shell
@@ -63,6 +67,8 @@ def connect(client: client.Client, container: str = None, shell: str = '/bin/bas
     """
     if not container:
         container, shell = select_container(client, shell)
+        if not container:
+            return None, 'There are no containers on this host.'
     ssh_command: str = f'ssh -t {client.hostname} docker exec -it {container} {shell}'
     click.echo()
     click.secho('Connecting to container with...', bold=True)
