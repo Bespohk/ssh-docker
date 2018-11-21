@@ -16,5 +16,8 @@ class Client(object):
             hostname, username=username, interactive=True)
         self.hostname = hostname
 
+    def close(self):
+        self.paramiko_client.close()
+
     def __call__(self, *args, **kwargs):
         return self.paramiko_client.exec_command(*args, **kwargs)

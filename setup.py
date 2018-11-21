@@ -21,7 +21,7 @@ setup(
     long_description=readme,
     license=license,
     author='Simon Coulton',
-    author_email='simon at bespohk.com',
+    author_email='simon@bespohk.com',
     py_modules=['sshdocker'],
     platforms=['Python 3.7'],
     classifiers=[
