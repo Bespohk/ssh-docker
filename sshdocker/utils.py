@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import click
 from sshdocker import models, client
 
 
@@ -27,10 +28,11 @@ def format_containers(containers, full=False, numbered=False):
         details: str = None
         one_based_index = i + 1
         number = f'[{one_based_index}] ' if numbered else ''
+        name = click.style(container.names, fg='yellow')
         if not full:
-            details = f'{number}{container.names}'
+            details = f'{number}{name}'
         else:
-            details = f'{number}{container.names} ({container.image}) uptime: {container.status}'
+            details = f'{number}{name} ({container.image}) uptime: {container.status}'
         output.append(details)
     return NL.join(output)
 

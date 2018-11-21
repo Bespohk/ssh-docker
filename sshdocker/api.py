@@ -33,21 +33,25 @@ def docker(client: client.Client, command='help'):
     return utils.read(stdout), utils.read(stderr)
 
 
-def select_container(client: client.Client):
-    input_prompt = ['Which container would you like to connect to?']
+def select_container(client: client.Client, shell: str):
+    input_prompt = [click.style('Which container would you like to connect to?', bold=True)]
     containers, _ = utils.ps(client, use_cache=True)
     input_prompt.append(utils.format_containers(containers, numbered=True))
-    input_prompt.append('Default [1]: ')
+    input_prompt.append(f'Default [1 {shell}]: ')
     container = input(utils.NL.join(input_prompt))
     if not container:
-        container = 0
+        container = '1'
     try:
-        return containers[int(container) - 1].names
+        container_shell = container.split(' ')
+        container = container_shell[0]
+        if len(container_shell) > 1:
+            shell = container_shell[1]
+        return containers[int(container) - 1].names, shell
     except IndexError:
         click.secho(f'\nContainer {container} does not exist.\n', fg='red')
-        return select_container(client)
+        return select_container(client, shell)
     except ValueError:
-        return container
+        return container, shell
 
 
 def connect(client: client.Client, container: str = None, shell: str = '/bin/bash'):
@@ -58,7 +62,7 @@ def connect(client: client.Client, container: str = None, shell: str = '/bin/bas
     [shell] will default to /bin/bash
     """
     if not container:
-        container = select_container(client)
+        container, shell = select_container(client, shell)
     ssh_command: str = f'ssh -t {client.hostname} docker exec -it {container} {shell}'
     click.echo()
     click.secho('Connecting to container with...', bold=True)

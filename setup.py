@@ -17,7 +17,7 @@ with open(os.path.join(path, 'README.rst')) as f:
 setup(
     name='ssh-docker',
     version=sshdocker.__version__,
-    description='Utility methods for dealing with HTML.',
+    description='A small convenience command to interactively deal with containers running remotely.',
     long_description=readme,
     license=license,
     author='Simon Coulton',
