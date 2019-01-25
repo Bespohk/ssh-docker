@@ -125,6 +125,7 @@ def similar_hosts(search: str):
             host_index = '1'
         try:
             host = similar[int(host_index) - 1]
+            click.echo()
             click.secho(f'Connecting to host {host}...', bold=True)
             return host
         except IndexError:
