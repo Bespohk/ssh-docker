@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import readline  # noqa
 import subprocess
 import sys
 import click
@@ -25,13 +26,14 @@ def list(client: client.Client, full=False, use_cache=False):
     return utils.format_containers(containers, full=full), errors
 
 
-def docker(client: client.Client, command='help'):
+def docker(client: client.Client, command='help', *args):
     """Access to the `docker` command directly.
 
     Usage:\tdocker [command]
     """
+    args = ' '.join(args)
     stdin, stdout, stderr = client(
-        f'docker {command}', get_pty=True)
+        f'docker {command} {args}', get_pty=True)
     return utils.read(stdout), utils.read(stderr)
 
 

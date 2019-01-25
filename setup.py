@@ -36,11 +36,17 @@ setup(
               'ssh',
               'cli'],
     install_requires=requirements,
-    packages=find_packages(exclude=["*.tests", "*.tests.*", "tests.*", "tests"]),
+    packages=find_packages(exclude=[
+        "*.tests",
+        "*.tests.*",
+        "tests.*",
+        "tests"]),
     include_package_data=True,
     zip_safe=False,
-    entry_points="""
-        [console_scripts]
-        ssh-docker=sshdocker.api:main
-    """,
+    entry_points={
+        'console_scripts': [
+            'ssh-docker=sshdocker.api:main',
+            'sshdoc=sshdocker.api:main'
+        ]
+    }
 )

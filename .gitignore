@@ -4,6 +4,7 @@ tests/_coverage
 docs/_build
 .cache/v/
 .pytest_cache
+.vscode
 
 ### Python ###
 *.py[cod]
