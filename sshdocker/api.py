@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import os
 import readline  # noqa
+import socket
 import subprocess
 import sys
 import click
@@ -106,12 +107,58 @@ def help(client, command=None):
     return utils.NL.join(output), None
 
 
+def similar_hosts(search: str):
+    similar = ssh.get_hosts(None, None, incomplete=search, contains=True)
+    if similar:
+        similar_count = len(similar)
+        click.echo(
+            f'Found {similar_count} similar hosts, did you mean one of these?')
+        input_prompt = []
+        for host_index, hostname in enumerate(similar):
+            one_based_index = host_index + 1
+            styled_index = click.style(f'{one_based_index}', bold=True)
+            styled_hostname = click.style(hostname, fg='yellow')
+            input_prompt.append(f'[{styled_index}] {styled_hostname}')
+        input_prompt.append('Default [1] or enter a new hostname: ')
+        host_index = input(utils.NL.join(input_prompt))
+        if not host_index:
+            host_index = '1'
+        try:
+            host = similar[int(host_index) - 1]
+            click.secho(f'Connecting to host {host}...', bold=True)
+            return host
+        except IndexError:
+            return similar_hosts(search)
+        except Exception:
+            return host_index
+    return None
+
+
+def create_client(host: str, username: str = None):
+    try:
+        return client.Client(host, username=username, interactive=True)
+    except socket.gaierror:
+        click.secho(f'Unable to connect to host "{host}".', fg='red', err=True)
+        return None
+
+
+def create_connection(host, username: str = None):
+    c = create_client(host, username=username)
+    if not c:
+        host = similar_hosts(host)
+        if host:
+            c = create_connection(host, username=username)
+    return c
+
+
 @click.command()
 @click.argument('host', type=click.STRING, autocompletion=ssh.get_hosts)
 @click.option('--container', help='The container to connect to.')
 @click.option('--username', help='The username required on the host.')
 def main(host: str, container: str = None, username: str = None):
-    c = client.Client(host, username=username, interactive=True)
+    c = create_connection(host, username=username)
+    if not c:
+        sys.exit(1)
     try:
         while True:
             if container:

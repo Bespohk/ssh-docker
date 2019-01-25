@@ -63,6 +63,11 @@ You may want to run any of the available Docker commands on the server you're co
 Additional Tips
 ---------------
 
+Hostname autocompletion
+~~~~~~~~~~~~~~~~~~~~~~~
+
+If the first attempt to connect to a hostname fails, it will attempt to find similar hostnames from your ssh config and suggest them to you.
+
 Autocomplete
 ~~~~~~~~~~~~
 

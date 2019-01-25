@@ -32,7 +32,14 @@ def get_config():
     return ssh_config
 
 
-def get_hosts(ctx, args, incomplete):
+def get_hosts(ctx, args, incomplete, contains=False):
     ssh_config = get_config()
-    return [host for host
-            in ssh_config.get_hostnames() if host.startswith(incomplete)]
+    hosts = []
+    for host in ssh_config.get_hostnames():
+        if contains:
+            if incomplete in host:
+                hosts.append(host)
+        else:
+            if host.startswith(incomplete):
+                hosts.append(host)
+    return sorted(hosts)
