@@ -108,15 +108,20 @@ def help(client, command=None):
 
 @click.command()
 @click.argument('host', type=click.STRING, autocompletion=ssh.get_hosts)
-@click.option('--username')
-def main(host: str, username: str = None):
+@click.option('--container', help='The container to connect to.')
+@click.option('--username', help='The username required on the host.')
+def main(host: str, container: str = None, username: str = None):
     c = client.Client(host, username=username, interactive=True)
     try:
         while True:
-            user_input = input('> ')
-            user_input: list = user_input.split(' ')
-            command: str = user_input.pop(0)
+            if container:
+                user_input = ['connect', container]
+                container = None
+            else:
+                user_input = input('> ')
+                user_input: list = user_input.split(' ')
             method = None
+            command: str = user_input.pop(0)
             errors = None
             output = None
             try:
