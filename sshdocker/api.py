@@ -1,9 +1,12 @@
 #!/usr/bin/env python3
+import os
 import readline  # noqa
 import subprocess
 import sys
 import click
 from sshdocker import utils, client, ssh
+
+DEFAULT_SHELL = os.getenv('SSH_DOCKER_SHELL', '/bin/bash')
 
 
 def exit(client: client.Client):
@@ -60,7 +63,10 @@ def select_container(client: client.Client, shell: str):
         return container, shell
 
 
-def connect(client: client.Client, container: str = None, shell: str = '/bin/bash'):
+def connect(
+        client: client.Client,
+        container: str = None,
+        shell: str = DEFAULT_SHELL):
     """Connect to a docker container via it's name.
 
     Usage:\tconnect [container name] [shell]
@@ -76,7 +82,8 @@ def connect(client: client.Client, container: str = None, shell: str = '/bin/bas
     click.secho('Connecting to container with...', bold=True)
     click.secho(ssh_command, fg='yellow')
     subprocess.call(
-        f'ssh -t {client.hostname} docker exec -it {container} {shell}', shell=True)
+        f'ssh -t {client.hostname} docker exec -it {container} {shell}',
+        shell=True)
     sys.exit()
 
 

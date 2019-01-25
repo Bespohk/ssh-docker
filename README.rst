@@ -43,7 +43,7 @@ If you already know the name of the container you can also specify that in the c
 
     > connect name_of_container
 
-By default it will attempt to run the bash shell when connecting, you can change this on a per run basis if required:
+By default it will attempt to run the bash shell when connecting, you can change this on a per run basis (or globally via the SSH_DOCKER_SHELL environment variable) if required:
 
 ::
 
