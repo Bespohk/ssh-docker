@@ -14,6 +14,8 @@ def get_client(host: str, username: str, interactive: bool = False):
         connection['hostname'] = user_config['hostname']
         connection['username'] = user_config['user']
         connection['key_filename'] = user_config['identityfile']
+        if 'proxycommand' in user_config:
+            connection['sock'] = paramiko.ProxyCommand(user_config['proxycommand'])
     except Exception:
         pass
     client.connect(**connection)
